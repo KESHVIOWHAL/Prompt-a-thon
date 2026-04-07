@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(uuid())
+  name           String
+  age            Int?
+  email          String    @unique
+  password       String
+  condition      String    @default("GENERAL_HEALTHY")
+  language       String    @default("english")
+  trimester      Int?
+  foodPreference String    @default("veg")
+  allergies      String    @default("[]")
+  streakCount    Int       @default(0)
+  lastLoggedAt   DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  meals     Meal[]
+  plans     MealPlan[]
+  cravings  Craving[]
+  feedbacks Feedback[]
+}
+
+model Meal {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  mealTime    String
+  loggedAt    DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model MealPlan {
+  id        String   @id @default(uuid())
+  userId    String
+  weekStart String
+  language  String
+  planData  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Craving {
+  id        String   @id @default(uuid())
+  userId    String
+  input     String
+  response  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Feedback {
+  id         String   @id @default(uuid())
+  userId     String
+  targetType String
+  targetId   String
+  rating     Int
+  reason     String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}
